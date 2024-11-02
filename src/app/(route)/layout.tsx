@@ -10,5 +10,5 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <main className="flex-auto">{children}</main>;
+  return <>{children}</>;
 }
