@@ -1,0 +1,14 @@
+name: frontend-todo-assessment
+
+services:
+  app:
+    container_name: frontend-assessment
+    build:
+      target: development
+    command: "/bin/sh -c 'yarn install && yarn dev --host'"
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/usr/src/next
+    env_file:
+      - .env
