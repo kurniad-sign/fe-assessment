@@ -1,4 +1,4 @@
-import { ForwardedRef, HTMLAttributes, ReactNode } from 'react';
+import { ButtonHTMLAttributes, ForwardedRef, ReactNode } from 'react';
 import { Loader2 } from 'lucide-react';
 import { type VariantProps } from 'tailwind-variants';
 
@@ -13,7 +13,7 @@ type ButtonProps = {
   loader?: ReactNode;
   loadingPlacement?: 'start' | 'end';
   isPending?: boolean;
-} & HTMLAttributes<HTMLButtonElement> &
+} & ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<ButtonVariantProps>;
 
 const UnwrappedButton = (props: ButtonProps, ref: ForwardedRef<any>) => {
