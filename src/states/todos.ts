@@ -25,8 +25,9 @@ export type ITodo = {
 
 export type FormStateTodo = Omit<ITodo, 'id'>;
 
-export const todoStore = proxy<{ todos: ITodo[] }>({
+export const todoStore = proxy<{ todos: ITodo[]; todo?: ITodo }>({
   todos: fakeDataTodo,
+  todo: undefined,
 });
 
 export const addTodo = (name: string) => {

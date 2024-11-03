@@ -6,15 +6,19 @@ export default function Home() {
   return (
     <div className="flex h-full w-full">
       <aside className="relative flex w-72 min-w-[210px] max-w-[420px] shrink-0 bg-grey-100">
-        Sidebar
+        <div className="flex grow flex-wrap items-center justify-center">
+          <Heading component="h3" variant="title-4" align="center">
+            Sidebar Component
+          </Heading>
+        </div>
       </aside>
       <section className="relative z-[1] flex min-h-[380px] grow flex-col shadow-md">
         <header
           aria-label="Header Content"
-          className="relative h-20 w-full max-w-screen-lg shrink-0 self-center bg-background px-7"
+          className="relative flex h-20 shrink-0 flex-col px-7"
         >
-          <div className="flex h-full items-center">
-            <div className="shrink-0 grow">
+          <div className="flex w-full max-w-screen-lg grow self-center">
+            <div className="flex shrink-0 grow items-center">
               <Heading component="h2" weight="bold">
                 Today
               </Heading>

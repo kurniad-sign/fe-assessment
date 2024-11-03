@@ -14,7 +14,6 @@ export function TodoInput() {
   const showInputTodos = (value: boolean) => setInputTodo(value);
 
   const handleSubmitTodo = handleSubmit((data) => {
-    console.log(data);
     addTodo(data.name);
     showInputTodos(false);
     reset();
@@ -26,7 +25,7 @@ export function TodoInput() {
         <div className="mt-2">
           <Button
             block
-            variant="outline"
+            color="primary"
             prependIcon={<Plus strokeWidth={2.5} className="h-4 w-4" />}
             onClick={() => showInputTodos(true)}
           >
