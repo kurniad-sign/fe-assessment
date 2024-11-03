@@ -11,7 +11,6 @@ import emptyIllustration from '@/assets/images/empty-state-task.svg';
 
 export function TodoItem() {
   const { todos } = useSnapshot(todoStore);
-
   return (
     <ul role="list" className="flex flex-col">
       {!todos.length && (
