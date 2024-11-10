@@ -68,18 +68,15 @@ const UnwrappedDrawer = (props: DrawerProps, ref: ForwardedRef<any>) => {
   }, [isOpen]);
 
   useEffect(() => {
-    const onKeyPress = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
+    const handleEscapeKey = ({ key }: KeyboardEvent) =>
+      key === 'Escape' && onClose();
 
     if (isOpen) {
-      window.addEventListener('keyup', onKeyPress);
+      window.addEventListener('keyup', handleEscapeKey);
     }
 
     return () => {
-      window.removeEventListener('keyup', onKeyPress);
+      window.removeEventListener('keyup', handleEscapeKey);
     };
   }, [isOpen, onClose]);
 

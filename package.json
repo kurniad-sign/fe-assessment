@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "format": "prettier --write */**/*.{js,jsx,json,ts,tsx,scss,css,md}",
-    "dev": "rimraf .next && next dev",
+    "dev": "rimraf .next && next dev --turbo",
     "build": "rimraf .next && next build",
     "start": "next start",
     "lint": "next lint",

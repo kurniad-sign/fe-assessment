@@ -12,7 +12,7 @@ import { ITodo, todoStore } from '@/states/todos';
 import emptyIllustration from '@/assets/images/empty-state-task.svg';
 
 export function TodoItem() {
-  const { todos, todo } = useSnapshot(todoStore);
+  const { todos } = useSnapshot(todoStore);
   const [openDrawer, setOpenDrawer] = useState(false);
 
   const onOpenDrawerTodo = (item: ITodo) => {
