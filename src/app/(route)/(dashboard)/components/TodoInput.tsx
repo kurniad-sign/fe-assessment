@@ -11,7 +11,9 @@ export function TodoInput() {
   const [inputTodos, setInputTodo] = useState(false);
   const { register, handleSubmit, reset } = useForm<FormStateTodo>();
 
-  const showInputTodos = (value: boolean) => setInputTodo(value);
+  const showInputTodos = (value: boolean) => {
+    setInputTodo(value);
+  };
 
   const handleSubmitTodo = handleSubmit((data) => {
     addTodo(data.name);
