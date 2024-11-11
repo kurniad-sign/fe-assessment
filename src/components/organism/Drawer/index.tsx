@@ -17,13 +17,6 @@ type DrawerProps = {
   width?: number;
 } & HTMLAttributes<HTMLDivElement>;
 
-function createPortalRoot() {
-  const drawerRoot = document.createElement('div');
-  drawerRoot.setAttribute('id', 'drawer-root');
-
-  return drawerRoot;
-}
-
 const UnwrappedDrawer = (props: DrawerProps, ref: ForwardedRef<any>) => {
   const {
     children,
@@ -34,8 +27,14 @@ const UnwrappedDrawer = (props: DrawerProps, ref: ForwardedRef<any>) => {
     removeWhenClosed,
     width = 400,
   } = props;
-
   const isTransitioning = useMountTransition(isOpen, 300);
+
+  function createPortalRoot() {
+    const drawerRoot = document.createElement('div');
+    drawerRoot.setAttribute('id', 'drawer-root');
+
+    return drawerRoot;
+  }
 
   const bodyRef = useRef<HTMLBodyElement | null>(
     document.querySelector('body')
@@ -83,7 +82,6 @@ const UnwrappedDrawer = (props: DrawerProps, ref: ForwardedRef<any>) => {
   if (!isTransitioning && removeWhenClosed && !isOpen) {
     return null;
   }
-
   return createPortal(
     <FocusTrap active={isOpen}>
       <div
@@ -111,7 +109,11 @@ const UnwrappedDrawer = (props: DrawerProps, ref: ForwardedRef<any>) => {
           }}
         >
           <button
-            style={{ opacity: 0, position: 'absolute', pointerEvents: 'none' }}
+            style={{
+              opacity: 0,
+              position: 'absolute',
+              pointerEvents: 'none',
+            }}
             tabIndex={0}
             aria-hidden="true"
           >

@@ -1,15 +1,23 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { Edit, NotepadText } from 'lucide-react';
 import { useSnapshot } from 'valtio';
 
 import { Button, Heading, Text } from '@/components/atom';
 import { EmptyStates } from '@/components/moleculs';
-import { Drawer } from '@/components/organism';
 import { ITodo, todoStore } from '@/states/todos';
 
 import emptyIllustration from '@/assets/images/empty-state-task.svg';
+
+const Drawer = dynamic(
+  () =>
+    import('@/components/organism/Drawer').then(
+      (component) => component.Drawer
+    ),
+  { ssr: false }
+);
 
 export function TodoItem() {
   const { todos } = useSnapshot(todoStore);

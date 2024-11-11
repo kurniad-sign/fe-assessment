@@ -1,84 +1,62 @@
-# syntax=docker/dockerfile:1
+FROM node:20-alpine AS base
 
-FROM ubuntu:20.04 AS base
-
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-FROM base AS installer_yarn
+# Install dependencies based on the preferred package manager
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
+RUN \
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+  elif [ -f package-lock.json ]; then npm ci; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
 
-RUN apt-get update && apt-get install -y \
-    curl \
-    unzip \
-    ca-certificates \
-    && apt-get clean
 
-# Install Node.js and Yarn
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
-    apt-get install -y nodejs && \
-    npm install -g yarn
-
-FROM base AS install_deps
-
-# Copy the current directory contents into the container
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-COPY --from=installer_yarn /usr/local/bin/yarn /usr/local/bin/yarn
+ENV NEXT_TELEMETRY_DISABLED=1
 
-# Install all package dependencies
-RUN yarn install --frozen-lockfile
+RUN \
+  if [ -f yarn.lock ]; then yarn run build; \
+  elif [ -f package-lock.json ]; then npm run build; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
 
-FROM base AS build
+# Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
 
-COPY . .
-COPY --from=install_deps /app/node_modules ./node_modules
-COPY --from=installer_yarn /usr/local/bin/yarn /usr/local/bin/yarn
-
-# Set the environment variable
 ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
-# Run the build command for Next.js
-RUN yarn build
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
-FROM base AS development
+COPY --from=builder /app/public ./public
 
-COPY . .
-COPY --from=installer_yarn /usr/local/bin/yarn /usr/local/bin/yarn
+# Set the correct permission for prerender cache
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
 
-# Install git for yarn install to work in development
-RUN apt-get update && apt-get install -y git \
-    && apt-get clean
+# Automatically leverage output traces to reduce image size
+# https://nextjs.org/docs/advanced-features/output-file-tracing
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Set the environment variable
-ENV NODE_ENV=development
+USER nextjs
 
 EXPOSE 3000
 
-FROM base AS production
+ENV PORT=3000
 
-# Create a non-root user and group
-RUN groupadd -r appgroup && useradd -r -g appgroup -d /app -s /sbin/nologin appuser
-
-COPY --from=installer_yarn /usr/local/bin/yarn /usr/local/bin/yarn
-
-# Remove unnecessary packages
-RUN rm -rf /var/lib/apt/lists/*
-
-# Set the environment variable
-ENV NODE_ENV=production
-
-# Copy the output from the build stage
-COPY --from=build /app/.next ./.next
-COPY --from=build /app/public ./public
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/package.json ./package.json
-
-# Change ownership of /app directory to the non-root user
-RUN chown -R appuser:appgroup /app
-
-# Switch to the non-root user
-USER appuser
-
-# Command to run the Next.js application
-CMD ["yarn", "start"]
-
-# Expose the port the app runs on
-EXPOSE 3000
+# server.js is created by next build from the standalone output
+# https://nextjs.org/docs/pages/api-reference/next-config-js/output
+ENV HOSTNAME="0.0.0.0"
+CMD ["node", "server.js"]

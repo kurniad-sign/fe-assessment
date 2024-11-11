@@ -1,14 +1,14 @@
-name: frontend-todo-assessment
+name: axent-note
 
 services:
   app:
-    container_name: frontend-assessment
+    container_name: axent
     build:
-      target: development
-    command: "/bin/sh -c 'yarn install && yarn dev --host'"
+      target: production
+    command: "/bin/sh -c 'pnpm install && pnpm dev --host'"
     ports:
       - '3000:3000'
     volumes:
       - .:/usr/src/next
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
