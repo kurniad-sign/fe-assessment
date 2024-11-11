@@ -2,13 +2,8 @@ name: axent-note
 
 services:
   app:
-    container_name: axent
-    build:
-      target: production
-    command: "/bin/sh -c 'pnpm install && pnpm dev --host'"
+    container_name: axent-note
+    image: axent-note
+    build: .
     ports:
       - '3000:3000'
-    volumes:
-      - .:/usr/src/next
-    # env_file:
-    #   - .env
